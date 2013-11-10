@@ -27,7 +27,7 @@
     "chrome app",
     "chrome.socket",
     "socket api",
-    "tcp",
+    "dgram",
     "udp",
     "wrapper",
     "client",
