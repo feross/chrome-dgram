@@ -1,0 +1,45 @@
+{
+  "name": "chrome-dgram",
+  "version": "1.0.1",
+  "description": "Use the Node `dgram` API in Chrome Apps",
+  "main": "index.js",
+  "dependencies": {
+    "bops": "0.x"
+  },
+  "devDependencies": {
+    "browserify": "2.x",
+    "envify": "0.x",
+    "once": "1.x",
+    "portfinder": "0.x",
+    "tape": "2.x"
+  },
+  "browser": {
+    "buffer": false
+  },
+  "scripts": {
+    "test": "tape test/*.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/feross/chrome-dgram.git"
+  },
+  "keywords": [
+    "chrome app",
+    "chrome.socket",
+    "socket api",
+    "tcp",
+    "udp",
+    "wrapper",
+    "client",
+    "server"
+  ],
+  "author": "Feross Aboukhadijeh <feross@feross.org> (http://feross.org/)",
+  "contributors": [
+    "John Hiesey <john@hiesey.com>"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/feross/chrome-dgram/issues"
+  },
+  "homepage": "https://github.com/feross/chrome-dgram"
+}
