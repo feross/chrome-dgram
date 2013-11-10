@@ -10,7 +10,7 @@ This module is used by [webtorrent](https://github.com/feross/webtorrent).
 
 ## Installation
 
-`npm install chrome-app-socket`
+`npm install chrome-dgram`
 
 ## Usage
 
@@ -19,7 +19,7 @@ Use node's `dgram` API, including all parameter list shorthands and variations.
 Example UDP client/bind:
 
 ```js
-var dgram = require('chrome-app-socket').dgram
+var dgram = require('chrome-dgram')
 
 var sock = dgram.createSocket('udp4')
 
