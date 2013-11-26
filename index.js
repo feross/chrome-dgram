@@ -9,7 +9,6 @@
 
 exports.Socket = Socket
 
-var bops = require('bops')
 var EventEmitter = require('events').EventEmitter
 var util = require('util')
 
@@ -25,20 +24,20 @@ var BIND_STATE_BOUND = 2
  * @return {Uint8Array}      [description]
  */
 function toBuffer (data) {
-  if (bops.is(data)) {
-    if (data.length === data.buffer.length) {
+  if (Buffer.isBuffer(data)) {
+    if (data.length === data.toArrayBuffer().byteLength) {
       return data
     } else {
       // If data is a Uint8Array (TypedArrayView) AND its underlying ArrayBuffer
       // has a different size (larger) then we create a new Uint8Array and
       // underlying ArrayBuffer that are the exact same size. This is necessary
       // because Chrome's `sendTo` consumes the underlying ArrayBuffer.
-      var newBuf = bops.create(data.length)
-      bops.copy(data, newBuf, 0, 0, data.length)
+      var newBuf = new Buffer(data.length)
+      data.copy(newBuf, 0, 0, data.length)
       return newBuf
     }
   } else if (typeof data === 'string') {
-    return bops.from(data)
+    return new Buffer(data)
   } else if (data instanceof ArrayBuffer) {
     return new Uint8Array(data)
   } else {
@@ -225,7 +224,7 @@ Socket.prototype.send = function (buffer,
                                   callback) {
 
   var self = this
-  buffer = toBuffer(buffer).buffer
+  buffer = toBuffer(buffer).toArrayBuffer()
   if (!callback) callback = function () {}
 
   if (offset !== 0)

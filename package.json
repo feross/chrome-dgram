@@ -3,18 +3,13 @@
   "version": "1.0.0",
   "description": "Use the Node `dgram` API in Chrome Apps",
   "main": "index.js",
-  "dependencies": {
-    "bops": "0.x"
-  },
+  "dependencies": {},
   "devDependencies": {
     "browserify": "2.x",
     "envify": "0.x",
     "once": "1.x",
     "portfinder": "0.x",
     "tape": "2.x"
-  },
-  "browser": {
-    "buffer": false
   },
   "scripts": {
     "test": "tape test/*.js"
