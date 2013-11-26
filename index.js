@@ -17,35 +17,6 @@ var BIND_STATE_BINDING = 1
 var BIND_STATE_BOUND = 2
 
 /**
- * Convert given data to a Uint8Array. The underlying ArrayBuffer is
- * guaranteed to be the same size as the Uint8Array.
- *
- * @param  {Uint8Array|ArrayBuffer|string} data
- * @return {Uint8Array}      [description]
- */
-function toBuffer (data) {
-  if (Buffer.isBuffer(data)) {
-    if (data.length === data.toArrayBuffer().byteLength) {
-      return data
-    } else {
-      // If data is a Uint8Array (TypedArrayView) AND its underlying ArrayBuffer
-      // has a different size (larger) then we create a new Uint8Array and
-      // underlying ArrayBuffer that are the exact same size. This is necessary
-      // because Chrome's `sendTo` consumes the underlying ArrayBuffer.
-      var newBuf = new Buffer(data.length)
-      data.copy(newBuf, 0, 0, data.length)
-      return newBuf
-    }
-  } else if (typeof data === 'string') {
-    return new Buffer(data)
-  } else if (data instanceof ArrayBuffer) {
-    return new Uint8Array(data)
-  } else {
-    throw new Error('Cannot convert data to ArrayBuffer type')
-  }
-}
-
-/**
  * dgram.createSocket(type, [callback])
  *
  * Creates a datagram Socket of the specified types. Valid types are `udp4`
@@ -76,7 +47,7 @@ util.inherits(Socket, EventEmitter)
  * be created via `dgram.createSocket(type, [callback])`.
  *
  * Event: 'message'
- *   - msg Uint8Array object. The message
+ *   - msg Buffer object. The message
  *   - rinfo Object. Remote address information
  *   Emitted when a new datagram is available on a socket. msg is a Buffer and
  *   rinfo is an object with the sender's address information and the number
@@ -187,7 +158,7 @@ Socket.prototype._recvLoop = function() {
           recvFromInfo.resultCode))
 
     } else {
-      self.emit('message', new Uint8Array(recvFromInfo.data), recvFromInfo)
+      self.emit('message', new Buffer(recvFromInfo.data), recvFromInfo)
       self._recvLoop()
     }
   })
@@ -207,7 +178,7 @@ Socket.prototype._recvLoop = function() {
  * assigned a random port number and bound to the "all interfaces" address
  * (0.0.0.0 for udp4 sockets, ::0 for udp6 sockets).
  *
- * @param {ArrayBuffer|TypedArray|string} buf Message to be sent
+ * @param {Buffer|Arrayish|string} buf Message to be sent
  * @param {number} offset Offset in the buffer where the message starts.
  * @param {number} length Number of bytes in the message.
  * @param {number} port destination port
@@ -224,7 +195,9 @@ Socket.prototype.send = function (buffer,
                                   callback) {
 
   var self = this
-  buffer = toBuffer(buffer).toArrayBuffer()
+  if (!Buffer.isBuffer(buffer)) buffer = new Buffer(buffer)
+  buffer = buffer.toArrayBuffer()
+
   if (!callback) callback = function () {}
 
   if (offset !== 0)
