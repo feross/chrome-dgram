@@ -158,7 +158,8 @@ Socket.prototype._recvLoop = function() {
           recvFromInfo.resultCode))
 
     } else {
-      self.emit('message', new Buffer(recvFromInfo.data), recvFromInfo)
+      var buf = new Buffer(new Uint8Array(recvFromInfo.data))
+      self.emit('message', buf, recvFromInfo)
       self._recvLoop()
     }
   })
