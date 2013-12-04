@@ -29,7 +29,6 @@ sock.on('message', function (data, rInfo) {
   console.log('Got data from ' + rInfo.address + ':' + rInfo.port)
   console.log(data)
 })
-
 ```
 
 See nodejs.org for full API documentation: [dgram](http://nodejs.org/api/dgram.html)
