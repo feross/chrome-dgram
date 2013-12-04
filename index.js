@@ -225,8 +225,11 @@ Socket.prototype.send = function (buffer,
   }
 
   if (!Buffer.isBuffer(buffer)) buffer = new Buffer(buffer)
-  buffer = buffer.toArrayBuffer()
-  chrome.socket.sendTo(self.id, buffer, address, port, function (writeInfo) {
+  chrome.socket.sendTo(self.id,
+                       buffer.toArrayBuffer(),
+                       address,
+                       port,
+                       function (writeInfo) {
     if (writeInfo.bytesWritten < 0) {
       var ex = new Error('Socket ' + self.id + ' send eror ' + writeInfo.bytesWritten)
       callback(ex)
