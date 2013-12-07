@@ -2,6 +2,8 @@ chrome-dgram
 ==========
 ### Use the Node `dgram` API in Chrome Apps
 
+[![Dependency Status](https://david-dm.org/feross/chrome-dgram.png)](https://david-dm.org/feross/chrome-dgram)
+
 This module lets you use the Node.js [dgram](http://nodejs.org/api/dgram.html) (UDP) API in [Chrome Packaged Apps](http://developer.chrome.com/apps/about_apps.html).
 
 Instead of learning the quirks of Chrome's `chrome.socket` API for networking in Chrome Apps just **use the higher-level node API you're familiar with**. Then, compile your code with [browserify](https://github.com/substack/node-browserify) and you're all set!
