@@ -1,5 +1,4 @@
 # chrome-dgram
-[![Build Status](http://img.shields.io/travis/feross/chrome-dgram.svg)](https://travis-ci.org/feross/chrome-dgram)
 [![NPM Version](http://img.shields.io/npm/v/chrome-dgram.svg)](https://npmjs.org/package/chrome-dgram)
 [![NPM](http://img.shields.io/npm/dm/chrome-dgram.svg)](https://npmjs.org/package/chrome-dgram)
 [![Gittip](http://img.shields.io/gittip/feross.svg)](https://www.gittip.com/feross/)
