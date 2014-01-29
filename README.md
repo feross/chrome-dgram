@@ -1,8 +1,10 @@
-chrome-dgram
-==========
-### Use the Node `dgram` API in Chrome Apps
+# chrome-dgram
+[![Build Status](http://img.shields.io/travis/feross/chrome-dgram.svg)](https://travis-ci.org/feross/chrome-dgram)
+[![NPM Version](http://img.shields.io/npm/v/chrome-dgram.svg)](https://npmjs.org/package/chrome-dgram)
+[![NPM](http://img.shields.io/npm/dm/chrome-dgram.svg)](https://npmjs.org/package/chrome-dgram)
+[![Gittip](http://img.shields.io/gittip/feross.svg)](https://www.gittip.com/feross/)
 
-[![Dependency Status](https://david-dm.org/feross/chrome-dgram.png)](https://david-dm.org/feross/chrome-dgram)
+### Use the Node `dgram` API in Chrome Apps
 
 This module lets you use the Node.js [dgram](http://nodejs.org/api/dgram.html) (UDP) API in [Chrome Packaged Apps](http://developer.chrome.com/apps/about_apps.html).
 
@@ -10,11 +12,13 @@ Instead of learning the quirks of Chrome's `chrome.socket` API for networking in
 
 This module is used by [webtorrent](https://github.com/feross/webtorrent).
 
-## Installation
+## install
 
-`npm install chrome-dgram`
+```
+npm install chrome-dgram
+```
 
-## Usage
+## methods
 
 Use node's `dgram` API, including all parameter list shorthands and variations.
 
@@ -35,10 +39,10 @@ sock.on('message', function (data, rInfo) {
 
 See nodejs.org for full API documentation: [dgram](http://nodejs.org/api/dgram.html)
 
-## Contributing
+## contribute
 
 To run tests, use `npm test`. The tests will run TCP and UDP servers and launch a few different Chrome Packaged Apps with browserified client code. The tests currently require Chrome Canary on Mac. If you're on Windows or Linux, feel free to send a pull request to fix this limitation.
 
-## MIT License
+## license
 
-Copyright (c) [Feross Aboukhadijeh](http://feross.org) & John Hiesey
+MIT. Copyright (c) [Feross Aboukhadijeh](http://feross.org) & John Hiesey.
