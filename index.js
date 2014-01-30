@@ -1,5 +1,3 @@
-/* global chrome */
-
 /**
  * UDP / Datagram Sockets
  * ======================
@@ -245,7 +243,7 @@ Socket.prototype.send = function (buffer,
  */
 Socket.prototype.close = function () {
   var self = this
-  if (!self._destroyed)
+  if (self._destroyed)
     return
 
   chrome.socket.destroy(self.id)
