@@ -152,7 +152,7 @@ Socket.prototype._recvLoop = function() {
       self.close()
 
     } else if (recvFromInfo.resultCode < 0) {
-      self.emit('error', new Error('Socket ' + self.id + ' recvFrom error ' +
+      self.emit('error', new Error('Socket ' + self.id + ' recvFrom error ' +
           recvFromInfo.resultCode))
 
     } else {
