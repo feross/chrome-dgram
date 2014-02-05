@@ -229,7 +229,7 @@ Socket.prototype.send = function (buffer,
                        port,
                        function (writeInfo) {
     if (writeInfo.bytesWritten < 0) {
-      var ex = new Error('Socket ' + self.id + ' send eror ' + writeInfo.bytesWritten)
+      var ex = new Error('Socket ' + self.id + ' send error ' + writeInfo.bytesWritten)
       callback(ex)
       self.emit('error', ex)
     } else {
