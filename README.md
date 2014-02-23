@@ -1,7 +1,7 @@
 # chrome-dgram
-[![NPM Version](http://img.shields.io/npm/v/chrome-dgram.png)](https://npmjs.org/package/chrome-dgram)
-[![NPM](http://img.shields.io/npm/dm/chrome-dgram.png)](https://npmjs.org/package/chrome-dgram)
-[![Gittip](http://img.shields.io/gittip/feross.png)](https://www.gittip.com/feross/)
+[![NPM Version](http://img.shields.io/npm/v/chrome-dgram.svg)](https://npmjs.org/package/chrome-dgram)
+[![NPM](http://img.shields.io/npm/dm/chrome-dgram.svg)](https://npmjs.org/package/chrome-dgram)
+[![Gittip](http://img.shields.io/gittip/feross.svg)](https://www.gittip.com/feross/)
 
 ### Use the Node `dgram` API in Chrome Apps
 
