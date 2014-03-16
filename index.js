@@ -14,6 +14,30 @@ var BIND_STATE_UNBOUND = 0
 var BIND_STATE_BINDING = 1
 var BIND_STATE_BOUND = 2
 
+// Track open sockets to route incoming data (via onReceive) to the right handlers.
+var sockets = {}
+
+if (typeof chrome !== 'undefined') {
+  chrome.sockets.udp.onReceive.addListener(onReceive)
+  chrome.sockets.udp.onReceiveError.addListener(onReceiveError)
+}
+
+function onReceive (info) {
+  if (info.socketId in sockets) {
+    sockets[info.socketId]._onReceive(info)
+  } else {
+    console.error('Unknown socket id: ' + info.socketId)
+  }
+}
+
+function onReceiveError (info) {
+  if (info.socketId in sockets) {
+    sockets[info.socketId]._onReceiveError(info.resultCode)
+  } else {
+    console.error('Unknown socket id: ' + info.socketId)
+  }
+}
+
 /**
  * dgram.createSocket(type, [callback])
  *
@@ -115,22 +139,23 @@ Socket.prototype.bind = function (port, address, callback) {
   if (typeof callback === 'function')
     self.once('listening', callback)
 
-  chrome.socket.create('udp', {}, function (createInfo) {
+  chrome.sockets.udp.create(function (createInfo) {
     self.id = createInfo.socketId
 
-    chrome.socket.bind(self.id, address, port, function (result) {
+    chrome.sockets.udp.bind(self.id, address, port, function (result) {
       if (result < 0) {
         self.emit('error', new Error('Socket ' + self.id + ' failed to bind'))
         return
       }
-      chrome.socket.getInfo(self.id, function (result) {
-        if (!result.localPort) {
-          self.emit(new Error('Cannot get local port for Socket ' + self.id))
+      sockets[self.id] = self
+      chrome.sockets.udp.getInfo(self.id, function (socketInfo) {
+        if (!socketInfo.localPort || !socketInfo.localAddress) {
+          self.emit(new Error('Cannot get local port/address for Socket ' + self.id))
           return
         }
 
-        self._port = result.localPort
-        self._address = result.localAddress
+        self._port = socketInfo.localPort
+        self._address = socketInfo.localAddress
 
         self._bindState = BIND_STATE_BOUND
         self.emit('listening')
@@ -144,23 +169,22 @@ Socket.prototype.bind = function (port, address, callback) {
 /**
  * Internal function to receive new messages and emit `message` events.
  */
-Socket.prototype._recvLoop = function() {
+Socket.prototype._onReceive = function (info) {
   var self = this
 
-  chrome.socket.recvFrom(self.id, function (recvFromInfo) {
-    if (recvFromInfo.resultCode === 0) {
-      self.close()
+  var buf = new Buffer(new Uint8Array(info.data))
+  var rinfo = {
+    address: info.remoteAddress,
+    family: 'IPv4',
+    port: info.remotePort,
+    size: buf.length
+  }
+  self.emit('message', buf, rinfo)
+}
 
-    } else if (recvFromInfo.resultCode < 0) {
-      self.emit('error', new Error('Socket ' + self.id + ' recvFrom error ' +
-          recvFromInfo.resultCode))
-
-    } else {
-      var buf = new Buffer(new Uint8Array(recvFromInfo.data))
-      self.emit('message', buf, recvFromInfo)
-      self._recvLoop()
-    }
-  })
+Socket.prototype._onReceiveError = function (resultCode) {
+  var self = this
+  self.emit('error', new Error('Socket ' + self.id + ' receive error ' + resultCode))
 }
 
 /**
@@ -186,15 +210,8 @@ Socket.prototype._recvLoop = function() {
  *                            Optional.
  */
 // Socket.prototype.send = function (buf, host, port, cb) {
-Socket.prototype.send = function (buffer,
-                                  offset,
-                                  length,
-                                  port,
-                                  address,
-                                  callback) {
-
+Socket.prototype.send = function (buffer, offset, length, port, address, callback) {
   var self = this
-
   if (!callback) callback = function () {}
 
   if (offset !== 0)
@@ -223,15 +240,13 @@ Socket.prototype.send = function (buffer,
   }
 
   if (!Buffer.isBuffer(buffer)) buffer = new Buffer(buffer)
-  chrome.socket.sendTo(self.id,
-                       buffer.toArrayBuffer(),
-                       address,
-                       port,
-                       function (writeInfo) {
-    if (writeInfo.bytesWritten < 0) {
-      var ex = new Error('Socket ' + self.id + ' send error ' + writeInfo.bytesWritten)
-      callback(ex)
-      self.emit('error', ex)
+  // assuming buffer is browser implementation (`buffer` package on npm)
+  chrome.sockets.udp.send(self.id, buffer.buffer /* buffer.toArrayBuffer() is slower */,
+                      address, port, function (sendInfo) {
+    if (sendInfo.resultCode < 0) {
+      var err = new Error('Socket ' + self.id + ' send error ' + sendInfo.resultCode)
+      callback(err)
+      self.emit('error', err)
     } else {
       callback(null)
     }
@@ -246,7 +261,7 @@ Socket.prototype.close = function () {
   if (self._destroyed)
     return
 
-  chrome.socket.destroy(self.id)
+  chrome.sockets.udp.close(self.id)
   self._destroyed = true
 
   self.emit('close')
@@ -268,11 +283,11 @@ Socket.prototype.address = function () {
 }
 
 Socket.prototype.setBroadcast = function (flag) {
-  // No chrome.socket equivalent
+  // No chrome.sockets equivalent
 }
 
 Socket.prototype.setTTL = function (ttl) {
-  // No chrome.socket equivalent
+  // No chrome.sockets equivalent
 }
 
 // NOTE: Multicast code is untested. Pull requests accepted for bug fixes and to
@@ -298,7 +313,7 @@ Socket.prototype.setTTL = function (ttl) {
 Socket.prototype.setMulticastTTL = function (ttl, callback) {
   var self = this
   if (!callback) callback = function () {}
-  chrome.socket.setMulticastTimeToLive(self.id, ttl, callback)
+  chrome.sockets.udp.setMulticastTimeToLive(self.id, ttl, callback)
 }
 
 /**
@@ -315,7 +330,7 @@ Socket.prototype.setMulticastTTL = function (ttl, callback) {
 Socket.prototype.setMulticastLoopback = function (flag, callback) {
   var self = this
   if (!callback) callback = function () {}
-  chrome.socket.setMulticastLoopbackMode(self.id, flag, callback)
+  chrome.sockets.udp.setMulticastLoopbackMode(self.id, flag, callback)
 }
 
 /**
@@ -338,7 +353,7 @@ Socket.prototype.addMembership = function (multicastAddress,
                                            callback) {
   var self = this
   if (!callback) callback = function () {}
-  chrome.socket.joinGroup(self.id, multicastAddress, callback)
+  chrome.sockets.udp.joinGroup(self.id, multicastAddress, callback)
 }
 
 /**
@@ -363,13 +378,13 @@ Socket.prototype.dropMembership = function (multicastAddress,
                                             callback) {
   var self = this
   if (!callback) callback = function () {}
-  chrome.socket.leaveGroup(self.id, multicastAddress, callback)
+  chrome.sockets.udp.leaveGroup(self.id, multicastAddress, callback)
 }
 
 Socket.prototype.unref = function () {
-  // No chrome.socket equivalent
+  // No chrome.sockets equivalent
 }
 
 Socket.prototype.ref = function () {
-  // No chrome.socket equivalent
+  // No chrome.sockets equivalent
 }

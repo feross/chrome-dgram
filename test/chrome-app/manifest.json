@@ -12,15 +12,14 @@
   },
 
   "permissions": [
-    {
-      "socket": [
-        "tcp-connect:*:*",
-        "tcp-listen::*",
-        "udp-send-to::*",
-        "udp-bind::*"
-      ]
-    },
-    "http://*/*"
+    "*://*/*"
   ],
+
+  "sockets": {
+    "udp": {
+      "bind": ["*"],
+      "send": ["*"]
+    }
+  }
 
 }
