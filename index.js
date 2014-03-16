@@ -160,8 +160,6 @@ Socket.prototype.bind = function (port, address, callback) {
 
         self._bindState = BIND_STATE_BOUND
         self.emit('listening')
-
-        self._recvLoop()
       })
     })
   })
