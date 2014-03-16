@@ -262,6 +262,7 @@ Socket.prototype.close = function () {
   if (self._destroyed)
     return
 
+  delete sockets[self.id]
   chrome.sockets.udp.close(self.id)
   self._destroyed = true
 
