@@ -144,7 +144,8 @@ Socket.prototype.bind = function (port, address, callback) {
 
     chrome.sockets.udp.bind(self.id, address, port, function (result) {
       if (result < 0) {
-        self.emit('error', new Error('Socket ' + self.id + ' failed to bind'))
+        self.emit('error', new Error('Socket ' + self.id + ' failed to bind. ' +
+          chrome.runtime.lastError.message))
         return
       }
       sockets[self.id] = self
