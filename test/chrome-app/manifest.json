@@ -17,8 +17,8 @@
 
   "sockets": {
     "udp": {
-      "bind": ["*"],
-      "send": ["*"]
+      "bind": "*",
+      "send": "*"
     }
   }
 
