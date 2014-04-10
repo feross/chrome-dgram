@@ -142,13 +142,13 @@ Socket.prototype.bind = function (port, address, callback) {
   chrome.sockets.udp.create(function (createInfo) {
     self.id = createInfo.socketId
 
+    sockets[self.id] = self
     chrome.sockets.udp.bind(self.id, address, port, function (result) {
       if (result < 0) {
         self.emit('error', new Error('Socket ' + self.id + ' failed to bind. ' +
           chrome.runtime.lastError.message))
         return
       }
-      sockets[self.id] = self
       chrome.sockets.udp.getInfo(self.id, function (socketInfo) {
         if (!socketInfo.localPort || !socketInfo.localAddress) {
           self.emit(new Error('Cannot get local port/address for Socket ' + self.id))
