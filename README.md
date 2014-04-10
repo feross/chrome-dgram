@@ -16,7 +16,7 @@ npm install chrome-dgram
 
 ## methods
 
-Use node's `dgram` API, including all parameter list shorthands and variations.
+Use node's `dgram` API, including all parameter list shorthands and variations.
 
 Example UDP client/bind:
 
