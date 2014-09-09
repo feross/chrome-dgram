@@ -131,6 +131,9 @@ Socket.prototype.bind = function (port, address, callback) {
   if (!address)
     address = '0.0.0.0'
 
+  if (!port)
+    port = 0
+
   if (self._bindState !== BIND_STATE_UNBOUND)
     throw new Error('Socket is already bound')
 
@@ -241,7 +244,7 @@ Socket.prototype.send = function (buffer, offset, length, port, address, callbac
   if (!Buffer.isBuffer(buffer)) buffer = new Buffer(buffer)
   // assuming buffer is browser implementation (`buffer` package on npm)
   chrome.sockets.udp.send(self.id, buffer.buffer /* buffer.toArrayBuffer() is slower */,
-                      address, port, function (sendInfo) {
+                      address, +port, function (sendInfo) {
     if (sendInfo.resultCode < 0) {
       var err = new Error('Socket ' + self.id + ' send error ' + sendInfo.resultCode)
       callback(err)
