@@ -242,9 +242,14 @@ Socket.prototype.send = function (buffer, offset, length, port, address, callbac
   }
 
   if (!Buffer.isBuffer(buffer)) buffer = new Buffer(buffer)
+
+  if (offset || length !== buffer.length)
+    buffer = buffer.buffer.slice(offset, length) /* buffer.toArrayBuffer() is slower */
+  else
+    buffer = buffer.buffer
+
   // assuming buffer is browser implementation (`buffer` package on npm)
-  chrome.sockets.udp.send(self.id, buffer.buffer /* buffer.toArrayBuffer() is slower */,
-                      address, +port, function (sendInfo) {
+  chrome.sockets.udp.send(self.id, buffer, address, +port, function (sendInfo) {
     if (sendInfo.resultCode < 0) {
       var err = new Error('Socket ' + self.id + ' send error ' + sendInfo.resultCode)
       callback(err)
