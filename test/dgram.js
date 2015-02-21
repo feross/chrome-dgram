@@ -37,4 +37,3 @@ test('UDP works (echo test)', function (t) {
     socket.bind(port)
   })
 })
-
