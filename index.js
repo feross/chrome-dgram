@@ -93,11 +93,9 @@ function Socket (type, listener) {
   var self = this
   EventEmitter.call(self)
 
-  if (type !== 'udp4')
-    throw new Error('Bad socket type specified. Valid types are: udp4')
+  if (type !== 'udp4') throw new Error('Bad socket type specified. Valid types are: udp4')
 
-  if (typeof listener === 'function')
-    self.on('message', listener)
+  if (typeof listener === 'function') self.on('message', listener)
 
   self._destroyed = false
   self._bindState = BIND_STATE_UNBOUND
@@ -130,19 +128,15 @@ Socket.prototype.bind = function (port, address, callback) {
     address = undefined
   }
 
-  if (!address)
-    address = '0.0.0.0'
+  if (!address) address = '0.0.0.0'
 
-  if (!port)
-    port = 0
+  if (!port) port = 0
 
-  if (self._bindState !== BIND_STATE_UNBOUND)
-    throw new Error('Socket is already bound')
+  if (self._bindState !== BIND_STATE_UNBOUND) throw new Error('Socket is already bound')
 
   self._bindState = BIND_STATE_BINDING
 
-  if (typeof callback === 'function')
-    self.once('listening', callback)
+  if (typeof callback === 'function') self.once('listening', callback)
 
   chrome.sockets.udp.create(function (createInfo) {
     self.id = createInfo.socketId
@@ -218,11 +212,9 @@ Socket.prototype.send = function (buffer, offset, length, port, address, callbac
   var self = this
   if (!callback) callback = function () {}
 
-  if (offset !== 0)
-    throw new Error('Non-zero offset not supported yet')
+  if (offset !== 0) throw new Error('Non-zero offset not supported yet')
 
-  if (self._bindState === BIND_STATE_UNBOUND)
-    self.bind(0)
+  if (self._bindState === BIND_STATE_UNBOUND) self.bind(0)
 
   // If the socket hasn't been bound yet, push the outbound packet onto the
   // send queue and send after binding is complete.
@@ -247,10 +239,12 @@ Socket.prototype.send = function (buffer, offset, length, port, address, callbac
 
   // assuming buffer is browser implementation (`buffer` package on npm)
   var buf = buffer.buffer
-  if (buffer.byteOffset || buffer.byteLength !== buf.byteLength)
+  if (buffer.byteOffset || buffer.byteLength !== buf.byteLength) {
     buf = buf.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength)
-  if (offset || length !== buffer.length)
+  }
+  if (offset || length !== buffer.length) {
     buf = buf.slice(offset, length)
+  }
 
   chrome.sockets.udp.send(self.id, buf, address, +port, function (sendInfo) {
     if (sendInfo.resultCode < 0) {
@@ -268,8 +262,7 @@ Socket.prototype.send = function (buffer, offset, length, port, address, callbac
  */
 Socket.prototype.close = function () {
   var self = this
-  if (self._destroyed)
-    return
+  if (self._destroyed) return
 
   delete sockets[self.id]
   chrome.sockets.udp.close(self.id)
