@@ -16,7 +16,7 @@
     "once": "1.x",
     "portfinder": "0.x",
     "standard": "^2.7.2",
-    "tape": "2.x"
+    "tape": "^4.0.0"
   },
   "homepage": "https://github.com/feross/chrome-dgram",
   "keywords": [
