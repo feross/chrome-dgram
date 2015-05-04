@@ -11,7 +11,7 @@
   ],
   "dependencies": {},
   "devDependencies": {
-    "browserify": "3.x",
+    "browserify": "^10.1.0",
     "envify": "0.x",
     "once": "1.x",
     "portfinder": "0.x",
