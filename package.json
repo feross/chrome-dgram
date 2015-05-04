@@ -15,7 +15,7 @@
     "envify": "0.x",
     "once": "1.x",
     "portfinder": "0.x",
-    "standard": "^2.7.2",
+    "standard": "^3.7.3",
     "tape": "^4.0.0"
   },
   "homepage": "https://github.com/feross/chrome-dgram",
