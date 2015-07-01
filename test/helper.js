@@ -4,8 +4,30 @@ var envify = require('envify/custom')
 var fs = require('fs')
 var once = require('once')
 var path = require('path')
+var os = require('os')
 
-var CHROME = '/Applications/Google\\ Chrome\\ Canary.app/Contents/MacOS/Google\\ Chrome\\ Canary'
+var CHROME = process.env.CHROME
+
+// locate default chromes for os
+switch (os.platform()) {
+  case 'win32' :
+    if (process.arch === 'x64') {
+      CHROME = '\"C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe\"'
+    } else {
+      CHROME = '\"C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe\"'
+    }
+    break
+  case 'darwin' :
+    CHROME = '/Applications/Google\\ Chrome.app/Contents/MacOS/Google\\ Chrome > /dev/null 2>&1 &'
+    break
+  case 'linux' :
+    CHROME = '/opt/google/chrome/chrome > /dev/null 2>&1 &'
+    break
+  default :
+    console.log('Defaulting to process.env.CHROME `%s`', process.env.CHROME)
+    break
+}
+
 var BUNDLE_PATH = path.join(__dirname, 'chrome-app/bundle.js')
 
 exports.browserify = function (filename, env, cb) {
@@ -24,7 +46,9 @@ exports.browserify = function (filename, env, cb) {
 }
 
 exports.launchBrowser = function () {
-  var command = CHROME + ' --load-and-launch-app=test/chrome-app'
+  // supply full path because windows
+  var app = path.join(__dirname, '/chrome-app')
+  var command = CHROME + ' --load-and-launch-app=' + app
   var env = { cwd: path.join(__dirname, '..') }
 
   return cp.exec(command, env, function () {})
