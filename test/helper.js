@@ -18,10 +18,10 @@ switch (os.platform()) {
     }
     break
   case 'darwin' :
-    CHROME = '/Applications/Google\\ Chrome.app/Contents/MacOS/Google\\ Chrome > /dev/null 2>&1 &'
+    CHROME = '/Applications/Google\\ Chrome.app/Contents/MacOS/Google\\ Chrome'
     break
   case 'linux' :
-    CHROME = '/opt/google/chrome/chrome > /dev/null 2>&1 &'
+    CHROME = '/opt/google/chrome/chrome'
     break
   default :
     console.log('Defaulting to process.env.CHROME `%s`', process.env.CHROME)
@@ -48,8 +48,14 @@ exports.browserify = function (filename, env, cb) {
 exports.launchBrowser = function () {
   // supply full path because windows
   var app = path.join(__dirname, '/chrome-app')
+
   var command = CHROME + ' --load-and-launch-app=' + app
+  if (os.platform() === 'darwin' || os.platform() === 'linux') {
+    command += ' > /dev/null 2>&1'
+  }
   var env = { cwd: path.join(__dirname, '..') }
 
-  return cp.exec(command, env, function () {})
+  return cp.exec(command, env, function (err) {
+    if (err) throw err
+  })
 }
