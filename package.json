@@ -9,7 +9,9 @@
   "contributors": [
     "John Hiesey <john@hiesey.com>"
   ],
-  "dependencies": {},
+  "dependencies": {
+    "inherits": "^2.0.1",
+  },
   "devDependencies": {
     "browserify": "^10.1.0",
     "envify": "^3.4.0",

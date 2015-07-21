@@ -10,7 +10,7 @@
 exports.Socket = Socket
 
 var EventEmitter = require('events').EventEmitter
-var util = require('util')
+var inherits = require('inherits')
 
 var BIND_STATE_UNBOUND = 0
 var BIND_STATE_BINDING = 1
@@ -62,7 +62,7 @@ exports.createSocket = function (type, listener) {
   return new Socket(type, listener)
 }
 
-util.inherits(Socket, EventEmitter)
+inherits(Socket, EventEmitter)
 
 /**
  * Class: dgram.Socket
