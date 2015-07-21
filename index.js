@@ -11,6 +11,7 @@ exports.Socket = Socket
 
 var EventEmitter = require('events').EventEmitter
 var inherits = require('inherits')
+var series = require('run-series')
 
 var BIND_STATE_UNBOUND = 0
 var BIND_STATE_BINDING = 1
@@ -99,6 +100,7 @@ function Socket (type, listener) {
 
   self._destroyed = false
   self._bindState = BIND_STATE_UNBOUND
+  self._bindTasks = []
 }
 
 /**
@@ -142,23 +144,33 @@ Socket.prototype.bind = function (port, address, callback) {
     self.id = createInfo.socketId
 
     sockets[self.id] = self
-    chrome.sockets.udp.bind(self.id, address, port, function (result) {
-      if (result < 0) {
-        self.emit('error', new Error('Socket ' + self.id + ' failed to bind. ' +
-          chrome.runtime.lastError.message))
-        return
-      }
-      chrome.sockets.udp.getInfo(self.id, function (socketInfo) {
-        if (!socketInfo.localPort || !socketInfo.localAddress) {
-          self.emit(new Error('Cannot get local port/address for Socket ' + self.id))
+
+    var bindFns = self._bindTasks.map(function (t) { return t.fn })
+
+    series(bindFns, function (err) {
+      if (err) return self.emit('error', err)
+      chrome.sockets.udp.bind(self.id, address, port, function (result) {
+        if (result < 0) {
+          self.emit('error', new Error('Socket ' + self.id + ' failed to bind. ' +
+            chrome.runtime.lastError.message))
           return
         }
+        chrome.sockets.udp.getInfo(self.id, function (socketInfo) {
+          if (!socketInfo.localPort || !socketInfo.localAddress) {
+            self.emit(new Error('Cannot get local port/address for Socket ' + self.id))
+            return
+          }
 
-        self._port = socketInfo.localPort
-        self._address = socketInfo.localAddress
+          self._port = socketInfo.localPort
+          self._address = socketInfo.localAddress
 
-        self._bindState = BIND_STATE_BOUND
-        self.emit('listening')
+          self._bindState = BIND_STATE_BOUND
+          self.emit('listening')
+
+          self._bindTasks.map(function (t) {
+            t.callback()
+          })
+        })
       })
     })
   })
@@ -317,7 +329,18 @@ Socket.prototype.setTTL = function (ttl) {
 Socket.prototype.setMulticastTTL = function (ttl, callback) {
   var self = this
   if (!callback) callback = function () {}
-  chrome.sockets.udp.setMulticastTimeToLive(self.id, ttl, callback)
+  if (self._bindState === BIND_STATE_BOUND) {
+    setMulticastTTL(callback)
+  } else {
+    self._bindTasks.push({
+      fn: setMulticastTTL,
+      callback: callback
+    })
+  }
+
+  function setMulticastTTL (callback) {
+    chrome.sockets.udp.setMulticastTimeToLive(self.id, ttl, callback)
+  }
 }
 
 /**
@@ -334,7 +357,18 @@ Socket.prototype.setMulticastTTL = function (ttl, callback) {
 Socket.prototype.setMulticastLoopback = function (flag, callback) {
   var self = this
   if (!callback) callback = function () {}
-  chrome.sockets.udp.setMulticastLoopbackMode(self.id, flag, callback)
+  if (self._bindState === BIND_STATE_BOUND) {
+    setMulticastLoopback(callback)
+  } else {
+    self._bindTasks.push({
+      fn: setMulticastLoopback,
+      callback: callback
+    })
+  }
+
+  function setMulticastLoopback (callback) {
+    chrome.sockets.udp.setMulticastLoopbackMode(self.id, flag, callback)
+  }
 }
 
 /**
