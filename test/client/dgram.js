@@ -3,6 +3,7 @@ var dgram = require('../../')
 var PORT = Number(process.env.PORT)
 
 var sock = dgram.createSocket('udp4')
+sock.setMulticastTTL(2)
 
 // If any errors are emitted, log them
 sock.on('error', function (err) {
