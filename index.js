@@ -90,11 +90,11 @@ inherits(Socket, EventEmitter)
  *   - exception Error object
  *   Emitted when an error occurs.
  */
-function Socket (type, listener) {
+function Socket (options, listener) {
   var self = this
   EventEmitter.call(self)
-
-  if (type !== 'udp4') throw new Error('Bad socket type specified. Valid types are: udp4')
+  if (typeof options === 'string') options = { type: options }
+  if (options.type !== 'udp4') throw new Error('Bad socket type specified. Valid types are: udp4')
 
   if (typeof listener === 'function') self.on('message', listener)
 
