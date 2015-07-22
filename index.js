@@ -157,7 +157,7 @@ Socket.prototype.bind = function (port, address, callback) {
         }
         chrome.sockets.udp.getInfo(self.id, function (socketInfo) {
           if (!socketInfo.localPort || !socketInfo.localAddress) {
-            self.emit(new Error('Cannot get local port/address for Socket ' + self.id))
+            self.emit('error', new Error('Cannot get local port/address for Socket ' + self.id))
             return
           }
 
