@@ -12,9 +12,9 @@ var CHROME = process.env.CHROME
 switch (os.platform()) {
   case 'win32' :
     if (process.arch === 'x64') {
-      CHROME = '\"C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe\"'
+      CHROME = '"C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe"'
     } else {
-      CHROME = '\"C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe\"'
+      CHROME = '"C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"'
     }
     break
   case 'darwin' :
