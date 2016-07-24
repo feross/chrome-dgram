@@ -212,16 +212,62 @@ Socket.prototype._onReceiveError = function (resultCode) {
  * (0.0.0.0 for udp4 sockets, ::0 for udp6 sockets).
  *
  * @param {Buffer|Arrayish|string} buf Message to be sent
- * @param {number} offset Offset in the buffer where the message starts.
- * @param {number} length Number of bytes in the message.
+ * @param {number} offset Offset in the buffer where the message starts. Optional.
+ * @param {number} length Number of bytes in the message. Optional.
  * @param {number} port destination port
  * @param {string} address destination IP
  * @param {function} callback Callback when message is done being delivered.
  *                            Optional.
  */
 // Socket.prototype.send = function (buf, host, port, cb) {
-Socket.prototype.send = function (buffer, offset, length, port, address, callback) {
+Socket.prototype.send = function () {
   var self = this
+
+  var buffer = arguments[0]
+  var callback = arguments[arguments.length - 1] instanceof Function ? arguments[arguments.length - 1] : undefined
+  var offset = 0
+  var length = buffer.length
+  var port
+  var address
+
+  if (callback) {
+    switch (arguments.length) {
+      case 4:
+        port = arguments[1]
+        address = arguments[2]
+        break
+      case 5:
+        offset = arguments[1]
+        port = arguments[2]
+        address = arguments[3]
+        break
+      case 6:
+        offset = arguments[1]
+        length = arguments[2]
+        port = arguments[3]
+        address = arguments[4]
+        break
+    }
+  } else {
+    switch (arguments.length) {
+      case 3:
+        port = arguments[1]
+        address = arguments[2]
+        break
+      case 4:
+        offset = arguments[1]
+        port = arguments[2]
+        address = arguments[3]
+        break
+      case 5:
+        offset = arguments[1]
+        length = arguments[2]
+        port = arguments[3]
+        address = arguments[4]
+        break
+    }
+  }
+
   if (!callback) callback = function () {}
 
   if (offset !== 0) throw new Error('Non-zero offset not supported yet')

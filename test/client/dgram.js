@@ -15,7 +15,9 @@ sock.send('beep', 0, 'beep'.length, PORT, '127.0.0.1')
 sock.on('message', function (data, rInfo) {
   if (data.toString() === 'boop') {
     sock.send('pass', 0, 'pass'.length, rInfo.port, rInfo.address)
+    sock.send('kill all humans', PORT, '127.0.0.1')
   } else {
     sock.send('fail', 0, 'fail'.length, rInfo.port, rInfo.address)
   }
+
 })
