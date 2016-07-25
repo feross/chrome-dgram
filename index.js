@@ -1,4 +1,4 @@
-/*global chrome */
+/* global chrome */
 
 /**
  * UDP / Datagram Sockets
