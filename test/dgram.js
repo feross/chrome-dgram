@@ -25,8 +25,10 @@ test('UDP works (echo test)', function (t) {
         socket.send(boop, 0, boop.length, remote.port, remote.address)
       } else if (i === 1) {
         t.equal(message.toString(), 'pass', 'Boop was received')
-        socket.close()
+      } else if (i === 2) {
+        t.equal(message.toString(), 'kill all humans', 'Killing all humans')
         child.kill()
+        socket.close()
         t.end()
       } else {
         t.fail('UDP client sent unexpected message')
