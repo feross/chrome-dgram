@@ -218,59 +218,50 @@ Socket.prototype._onReceiveError = function (resultCode) {
  * @param {string} address destination IP
  * @param {function} callback Callback when message is done being delivered.
  *                            Optional.
+ *
+ * Valid combinations:
+ *   send(buffer, offset, length, port, address, callback)
+ *   send(buffer, offset, length, port, address)
+ *   send(buffer, offset, length, port)
+ *   send(bufferOrList, port, address, callback)
+ *   send(bufferOrList, port, address)
+ *   send(bufferOrList, port)
+ *
  */
-// Socket.prototype.send = function (buf, host, port, cb) {
-Socket.prototype.send = function () {
+Socket.prototype.send = function (buffer, offset, length, port, address, callback) {
   var self = this
 
-  var buffer = arguments[0]
-  var callback = arguments[arguments.length - 1] instanceof Function ? arguments[arguments.length - 1] : undefined
-  var offset = 0
-  var length = buffer.length
-  var port
-  var address
+  var list
 
-  if (callback) {
-    switch (arguments.length) {
-      case 4:
-        port = arguments[1]
-        address = arguments[2]
-        break
-      case 5:
-        offset = arguments[1]
-        port = arguments[2]
-        address = arguments[3]
-        break
-      case 6:
-        offset = arguments[1]
-        length = arguments[2]
-        port = arguments[3]
-        address = arguments[4]
-        break
-    }
+  if (address || (port && typeof port !== 'function')) {
+    buffer = sliceBuffer(buffer, offset, length)
   } else {
-    switch (arguments.length) {
-      case 3:
-        port = arguments[1]
-        address = arguments[2]
-        break
-      case 4:
-        offset = arguments[1]
-        port = arguments[2]
-        address = arguments[3]
-        break
-      case 5:
-        offset = arguments[1]
-        length = arguments[2]
-        port = arguments[3]
-        address = arguments[4]
-        break
-    }
+    callback = port
+    port = offset
+    address = length
   }
 
-  if (!callback) callback = function () {}
+  if (!Array.isArray(buffer)) {
+    if (typeof buffer === 'string') {
+      list = [ Buffer.from(buffer) ]
+    } else if (!(buffer instanceof Buffer)) {
+      throw new TypeError('First argument must be a buffer or a string')
+    } else {
+      list = [ buffer ]
+    }
+  } else if (!(list = fixBufferList(buffer))) {
+    throw new TypeError('Buffer list arguments must be buffers or strings')
+  }
 
-  if (offset !== 0) throw new Error('Non-zero offset not supported yet')
+  port = port >>> 0
+  if (port === 0 || port > 65535) {
+    throw new RangeError('Port should be > 0 and < 65536')
+  }
+
+  // Normalize callback so it's always a function
+  if (typeof callback !== 'function') {
+    callback = function () {}
+  }
 
   if (self._bindState === BIND_STATE_UNBOUND) self.bind(0)
 
@@ -293,7 +284,28 @@ Socket.prototype.send = function () {
     return
   }
 
-  if (!Buffer.isBuffer(buffer)) buffer = new Buffer(buffer)
+  var ab = Buffer.concat(list).buffer
+
+  chrome.sockets.udp.send(self.id, ab, address, port, function (sendInfo) {
+    if (sendInfo.resultCode < 0) {
+      var err = new Error('Socket ' + self.id + ' send error ' + sendInfo.resultCode)
+      callback(err)
+      self.emit('error', err)
+    } else {
+      callback(null)
+    }
+  })
+}
+
+function sliceBuffer (buffer, offset, length) {
+  if (typeof buffer === 'string') {
+    buffer = Buffer.from(buffer)
+  } else if (!(buffer instanceof Buffer)) {
+    throw new TypeError('First argument must be a buffer or string')
+  }
+
+  offset = offset >>> 0
+  length = length >>> 0
 
   // assuming buffer is browser implementation (`buffer` package on npm)
   var buf = buffer.buffer
@@ -304,15 +316,24 @@ Socket.prototype.send = function () {
     buf = buf.slice(offset, length)
   }
 
-  chrome.sockets.udp.send(self.id, buf, address, +port, function (sendInfo) {
-    if (sendInfo.resultCode < 0) {
-      var err = new Error('Socket ' + self.id + ' send error ' + sendInfo.resultCode)
-      callback(err)
-      self.emit('error', err)
+  return Buffer(buf)
+}
+
+function fixBufferList (list) {
+  var newlist = new Array(list.length)
+
+  for (var i = 0, l = list.length; i < l; i++) {
+    var buf = list[i]
+    if (typeof buf === 'string') {
+      newlist[i] = Buffer.from(buf)
+    } else if (!(buf instanceof Buffer)) {
+      return null
     } else {
-      callback(null)
+      newlist[i] = buf
     }
-  })
+  }
+
+  return newlist
 }
 
 /**

@@ -24,9 +24,9 @@ test('UDP works (echo test)', function (t) {
         var boop = new Buffer('boop')
         socket.send(boop, 0, boop.length, remote.port, remote.address)
       } else if (i === 1) {
-        t.equal(message.toString(), 'pass', 'Boop was received')
+        t.equal(message.toString(), 'pass1', 'Boop was received')
       } else if (i === 2) {
-        t.equal(message.toString(), 'kill all humans', 'Killing all humans')
+        t.equal(message.toString(), 'pass2', 'Omitting `offset` and `length` works')
         child.kill()
         socket.close()
         t.end()
