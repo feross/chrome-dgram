@@ -23,6 +23,10 @@ var sockets = {}
 if (typeof chrome !== 'undefined') {
   chrome.sockets.udp.onReceive.addListener(onReceive)
   chrome.sockets.udp.onReceiveError.addListener(onReceiveError)
+} else {
+  var undefinedChromeErrorMsg = 'Undefined chrome ref, could not register on-receive listener'
+  console.error(undefinedChromeErrorMsg)
+  throw new Error(undefinedChromeErrorMsg)
 }
 
 function onReceive (info) {
