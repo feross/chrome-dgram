@@ -21,7 +21,7 @@ test('UDP works (echo test)', function (t) {
     socket.on('message', function (message, remote) {
       if (i === 0) {
         t.equal(message.toString(), 'beep', 'Got beep')
-        var boop = new Buffer('boop')
+        var boop = Buffer.from('boop')
         socket.send(boop, 0, boop.length, remote.port, remote.address)
       } else if (i === 1) {
         t.equal(message.toString(), 'pass1', 'Boop was received')

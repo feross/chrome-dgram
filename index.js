@@ -184,7 +184,7 @@ Socket.prototype.bind = function (port, address, callback) {
 Socket.prototype._onReceive = function (info) {
   var self = this
 
-  var buf = new Buffer(new Uint8Array(info.data))
+  var buf = Buffer.from(new Uint8Array(info.data))
   var rinfo = {
     address: info.remoteAddress,
     family: 'IPv4',
@@ -318,7 +318,7 @@ function sliceBuffer (buffer, offset, length) {
     buf = buf.slice(offset, length)
   }
 
-  return Buffer(buf)
+  return Buffer.from(buf)
 }
 
 function fixBufferList (list) {
