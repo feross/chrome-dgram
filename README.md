@@ -1,4 +1,11 @@
-# chrome-dgram [![npm](https://img.shields.io/npm/v/chrome-dgram.svg)](https://npmjs.org/package/chrome-dgram) [![downloads](https://img.shields.io/npm/dm/chrome-dgram.svg)](https://npmjs.org/package/chrome-dgram)
+# chrome-dgram [![npm][npm-image]][npm-url] [![downloads][downloads-image]][downloads-url] [![javascript style guide][standard-image]][standard-url]
+
+[npm-image]: https://img.shields.io/npm/v/chrome-dgram.svg
+[npm-url]: https://npmjs.org/package/chrome-dgram
+[downloads-image]: https://img.shields.io/npm/dm/chrome-dgram.svg
+[downloads-url]: https://npmjs.org/package/chrome-dgram
+[standard-image]: https://img.shields.io/badge/code_style-standard-brightgreen.svg
+[standard-url]: https://standardjs.com
 
 ### Use the Node `dgram` API in Chrome Apps
 
