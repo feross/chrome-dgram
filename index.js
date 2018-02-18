@@ -456,8 +456,8 @@ Socket.prototype.setMulticastLoopback = function (flag, callback) {
  *                            operation is done.
  */
 Socket.prototype.addMembership = function (multicastAddress,
-                                           multicastInterface,
-                                           callback) {
+  multicastInterface,
+  callback) {
   var self = this
   if (!callback) callback = function () {}
   chrome.sockets.udp.joinGroup(self.id, multicastAddress, callback)
@@ -481,8 +481,8 @@ Socket.prototype.addMembership = function (multicastAddress,
  *                            operation is done.
  */
 Socket.prototype.dropMembership = function (multicastAddress,
-                                            multicastInterface,
-                                            callback) {
+  multicastInterface,
+  callback) {
   var self = this
   if (!callback) callback = function () {}
   chrome.sockets.udp.leaveGroup(self.id, multicastAddress, callback)
