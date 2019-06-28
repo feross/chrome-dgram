@@ -40,6 +40,6 @@
   },
   "scripts": {
     "test": "standard",
-    "test-browser" "tape test/*.js"
+    "test-browser": "tape test/*.js"
   }
 }
