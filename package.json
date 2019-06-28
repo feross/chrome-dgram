@@ -39,6 +39,7 @@
     "url": "git://github.com/feross/chrome-dgram.git"
   },
   "scripts": {
-    "test": "standard && tape test/*.js"
+    "test": "standard",
+    "test-browser" "tape test/*.js"
   }
 }
