@@ -245,11 +245,11 @@ Socket.prototype.send = function (buffer, offset, length, port, address, callbac
 
   if (!Array.isArray(buffer)) {
     if (typeof buffer === 'string') {
-      list = [ Buffer.from(buffer) ]
+      list = [Buffer.from(buffer)]
     } else if (!(buffer instanceof Buffer)) {
       throw new TypeError('First argument must be a buffer or a string')
     } else {
-      list = [ buffer ]
+      list = [buffer]
     }
   } else if (!(list = fixBufferList(buffer))) {
     throw new TypeError('Buffer list arguments must be buffers or strings')
