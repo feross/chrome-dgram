@@ -20,7 +20,14 @@ var BIND_STATE_BOUND = 2
 // Track open sockets to route incoming data (via onReceive) to the right handlers.
 var sockets = {}
 
-if (typeof chrome !== 'undefined') {
+// Thorough check for Chrome App since both Edge and Chrome implement dummy chrome object
+if (
+  typeof chrome === 'object' &&
+  typeof chrome.runtime === 'object' &&
+  typeof chrome.runtime.id === 'string' &&
+  typeof chrome.sockets === 'object' &&
+  typeof chrome.sockets.udp === 'object'
+) {
   chrome.sockets.udp.onReceive.addListener(onReceive)
   chrome.sockets.udp.onReceiveError.addListener(onReceiveError)
 } else {
