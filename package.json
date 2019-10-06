@@ -1,7 +1,7 @@
 {
   "name": "chrome-dgram",
   "description": "Use the Node `dgram` API in Chrome Apps",
-  "version": "3.0.3",
+  "version": "3.0.4",
   "author": "Feross Aboukhadijeh <feross@feross.org> (http://feross.org/)",
   "bugs": {
     "url": "https://github.com/feross/chrome-dgram/issues"
