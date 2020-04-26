@@ -408,7 +408,7 @@ Socket.prototype.setMulticastTTL = function (ttl, callback) {
   } else {
     self._bindTasks.push({
       fn: setMulticastTTL,
-      callback: callback
+      callback
     })
   }
 
@@ -436,7 +436,7 @@ Socket.prototype.setMulticastLoopback = function (flag, callback) {
   } else {
     self._bindTasks.push({
       fn: setMulticastLoopback,
-      callback: callback
+      callback
     })
   }
 
