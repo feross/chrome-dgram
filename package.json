@@ -2,7 +2,11 @@
   "name": "chrome-dgram",
   "description": "Use the Node `dgram` API in Chrome Apps",
   "version": "3.0.5",
-  "author": "Feross Aboukhadijeh <feross@feross.org> (http://feross.org/)",
+  "author": {
+    "name": "Feross Aboukhadijeh",
+    "email": "feross@feross.org",
+    "url": "https://feross.org"
+  },
   "bugs": {
     "url": "https://github.com/feross/chrome-dgram/issues"
   },
@@ -41,5 +45,19 @@
   "scripts": {
     "test": "standard",
     "test-browser": "tape test/*.js"
-  }
+  },
+  "funding": [
+    {
+      "type": "github",
+      "url": "https://github.com/sponsors/feross"
+    },
+    {
+      "type": "patreon",
+      "url": "https://www.patreon.com/feross"
+    },
+    {
+      "type": "consulting",
+      "url": "https://feross.org/support"
+    }
+  ]
 }
