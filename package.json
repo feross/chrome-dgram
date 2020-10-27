@@ -14,16 +14,16 @@
     "John Hiesey <john@hiesey.com>"
   ],
   "dependencies": {
-    "inherits": "^2.0.1",
-    "run-series": "^1.1.2"
+    "inherits": "^2.0.4",
+    "run-series": "^1.1.9"
   },
   "devDependencies": {
     "browserify": "^16.2.3",
-    "envify": "^4.0.0",
+    "envify": "^4.1.0",
     "once": "1.x",
-    "portfinder": "^1.0.5",
+    "portfinder": "^1.0.28",
     "standard": "*",
-    "tape": "^5.0.0"
+    "tape": "^5.0.1"
   },
   "homepage": "https://github.com/feross/chrome-dgram",
   "keywords": [
