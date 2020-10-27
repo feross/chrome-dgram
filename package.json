@@ -18,7 +18,7 @@
     "run-series": "^1.1.9"
   },
   "devDependencies": {
-    "browserify": "^16.2.3",
+    "browserify": "^17.0.0",
     "envify": "^4.1.0",
     "once": "1.x",
     "portfinder": "^1.0.28",
