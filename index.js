@@ -175,7 +175,7 @@ Socket.prototype.bind = function (port, address, callback) {
           self._bindState = BIND_STATE_BOUND
           self.emit('listening')
 
-          self._bindTasks.map(function (t) {
+          self._bindTasks.forEach(function (t) {
             t.callback()
           })
         })
