@@ -1,27 +1,27 @@
-var dgram = require('dgram')
-var helper = require('./helper')
-var portfinder = require('portfinder')
-var test = require('tape')
+const dgram = require('dgram')
+const helper = require('./helper')
+const portfinder = require('portfinder')
+const test = require('tape')
 
 test('UDP works (echo test)', function (t) {
   portfinder.getPort(function (err, port) {
     t.error(err, 'Found free ports')
-    var socket = dgram.createSocket('udp4')
-    var child
+    const socket = dgram.createSocket('udp4')
+    let child
 
     socket.on('listening', function () {
-      var env = { PORT: port }
+      const env = { PORT: port }
       helper.browserify('dgram.js', env, function (err) {
         t.error(err, 'Clean browserify build')
         child = helper.launchBrowser()
       })
     })
 
-    var i = 0
+    let i = 0
     socket.on('message', function (message, remote) {
       if (i === 0) {
         t.equal(message.toString(), 'beep', 'Got beep')
-        var boop = Buffer.from('boop')
+        const boop = Buffer.from('boop')
         socket.send(boop, 0, boop.length, remote.port, remote.address)
       } else if (i === 1) {
         t.equal(message.toString(), 'pass1', 'Boop was received')

@@ -1,8 +1,8 @@
-var dgram = require('../../')
+const dgram = require('../../')
 
-var PORT = Number(process.env.PORT)
+const PORT = Number(process.env.PORT)
 
-var sock = dgram.createSocket('udp4')
+const sock = dgram.createSocket('udp4')
 sock.setMulticastTTL(2)
 
 // If any errors are emitted, log them

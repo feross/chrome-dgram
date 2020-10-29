@@ -1,12 +1,12 @@
-var browserify = require('browserify')
-var cp = require('child_process')
-var envify = require('envify/custom')
-var fs = require('fs')
-var once = require('once')
-var path = require('path')
-var os = require('os')
+const browserify = require('browserify')
+const cp = require('child_process')
+const envify = require('envify/custom')
+const fs = require('fs')
+const once = require('once')
+const path = require('path')
+const os = require('os')
 
-var CHROME = process.env.CHROME
+let CHROME = process.env.CHROME
 
 // locate default chromes for os
 switch (os.platform()) {
@@ -28,14 +28,14 @@ switch (os.platform()) {
     break
 }
 
-var BUNDLE_PATH = path.join(__dirname, 'chrome-app/bundle.js')
+const BUNDLE_PATH = path.join(__dirname, 'chrome-app/bundle.js')
 
 exports.browserify = function (filename, env, cb) {
   if (!env) env = {}
   if (!cb) cb = function () {}
   cb = once(cb)
 
-  var b = browserify()
+  const b = browserify()
   b.add(path.join(__dirname, 'client', filename))
   b.transform(envify(env))
 
@@ -47,13 +47,13 @@ exports.browserify = function (filename, env, cb) {
 
 exports.launchBrowser = function () {
   // supply full path because windows
-  var app = path.join(__dirname, '/chrome-app')
+  const app = path.join(__dirname, '/chrome-app')
 
-  var command = CHROME + ' --load-and-launch-app=' + app
+  let command = CHROME + ' --load-and-launch-app=' + app
   if (os.platform() === 'darwin' || os.platform() === 'linux') {
     command += ' > /dev/null 2>&1'
   }
-  var env = { cwd: path.join(__dirname, '..') }
+  const env = { cwd: path.join(__dirname, '..') }
 
   return cp.exec(command, env, function (err) {
     if (err) throw err

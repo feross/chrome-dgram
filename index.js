@@ -10,16 +10,16 @@
 
 exports.Socket = Socket
 
-var EventEmitter = require('events').EventEmitter
-var inherits = require('inherits')
-var series = require('run-series')
+const EventEmitter = require('events').EventEmitter
+const inherits = require('inherits')
+const series = require('run-series')
 
-var BIND_STATE_UNBOUND = 0
-var BIND_STATE_BINDING = 1
-var BIND_STATE_BOUND = 2
+const BIND_STATE_UNBOUND = 0
+const BIND_STATE_BINDING = 1
+const BIND_STATE_BOUND = 2
 
 // Track open sockets to route incoming data (via onReceive) to the right handlers.
-var sockets = {}
+const sockets = {}
 
 // Thorough check for Chrome App since both Edge and Chrome implement dummy chrome object
 if (
@@ -99,7 +99,7 @@ inherits(Socket, EventEmitter)
  *   Emitted when an error occurs.
  */
 function Socket (options, listener) {
-  var self = this
+  const self = this
   EventEmitter.call(self)
   if (typeof options === 'string') options = { type: options }
   if (options.type !== 'udp4') throw new Error('Bad socket type specified. Valid types are: udp4')
@@ -132,7 +132,7 @@ function Socket (options, listener) {
  *                            when binding is done.
  */
 Socket.prototype.bind = function (port, address, callback) {
-  var self = this
+  const self = this
   if (typeof address === 'function') {
     callback = address
     address = undefined
@@ -153,7 +153,7 @@ Socket.prototype.bind = function (port, address, callback) {
 
     sockets[self.id] = self
 
-    var bindFns = self._bindTasks.map(function (t) { return t.fn })
+    const bindFns = self._bindTasks.map(function (t) { return t.fn })
 
     series(bindFns, function (err) {
       if (err) return self.emit('error', err)
@@ -188,10 +188,10 @@ Socket.prototype.bind = function (port, address, callback) {
  * Internal function to receive new messages and emit `message` events.
  */
 Socket.prototype._onReceive = function (info) {
-  var self = this
+  const self = this
 
-  var buf = Buffer.from(new Uint8Array(info.data))
-  var rinfo = {
+  const buf = Buffer.from(new Uint8Array(info.data))
+  const rinfo = {
     address: info.remoteAddress,
     family: 'IPv4',
     port: info.remotePort,
@@ -201,7 +201,7 @@ Socket.prototype._onReceive = function (info) {
 }
 
 Socket.prototype._onReceiveError = function (resultCode) {
-  var self = this
+  const self = this
   self.emit('error', new Error('Socket ' + self.id + ' receive error ' + resultCode))
 }
 
@@ -237,9 +237,9 @@ Socket.prototype._onReceiveError = function (resultCode) {
  *
  */
 Socket.prototype.send = function (buffer, offset, length, port, address, callback) {
-  var self = this
+  const self = this
 
-  var list
+  let list
 
   if (address || (port && typeof port !== 'function')) {
     buffer = sliceBuffer(buffer, offset, length)
@@ -282,7 +282,7 @@ Socket.prototype.send = function (buffer, offset, length, port, address, callbac
       self._sendQueue = []
       self.once('listening', function () {
         // Flush the send queue.
-        for (var i = 0; i < self._sendQueue.length; i++) {
+        for (let i = 0; i < self._sendQueue.length; i++) {
           self.send.apply(self, self._sendQueue[i])
         }
         self._sendQueue = undefined
@@ -292,11 +292,11 @@ Socket.prototype.send = function (buffer, offset, length, port, address, callbac
     return
   }
 
-  var ab = Buffer.concat(list).buffer
+  const ab = Buffer.concat(list).buffer
 
   chrome.sockets.udp.send(self.id, ab, address, port, function (sendInfo) {
     if (sendInfo.resultCode < 0) {
-      var err = new Error('Socket ' + self.id + ' send error ' + sendInfo.resultCode)
+      const err = new Error('Socket ' + self.id + ' send error ' + sendInfo.resultCode)
       callback(err)
       self.emit('error', err)
     } else {
@@ -316,7 +316,7 @@ function sliceBuffer (buffer, offset, length) {
   length = length >>> 0
 
   // assuming buffer is browser implementation (`buffer` package on npm)
-  var buf = buffer.buffer
+  let buf = buffer.buffer
   if (buffer.byteOffset || buffer.byteLength !== buf.byteLength) {
     buf = buf.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength)
   }
@@ -328,10 +328,10 @@ function sliceBuffer (buffer, offset, length) {
 }
 
 function fixBufferList (list) {
-  var newlist = new Array(list.length)
+  const newlist = new Array(list.length)
 
-  for (var i = 0, l = list.length; i < l; i++) {
-    var buf = list[i]
+  for (let i = 0, l = list.length; i < l; i++) {
+    const buf = list[i]
     if (typeof buf === 'string') {
       newlist[i] = Buffer.from(buf)
     } else if (!(buf instanceof Buffer)) {
@@ -348,7 +348,7 @@ function fixBufferList (list) {
  * Close the underlying socket and stop listening for data on it.
  */
 Socket.prototype.close = function () {
-  var self = this
+  const self = this
   if (self._destroyed) return
 
   delete sockets[self.id]
@@ -365,7 +365,7 @@ Socket.prototype.close = function () {
  * @return {Object} information
  */
 Socket.prototype.address = function () {
-  var self = this
+  const self = this
   return {
     address: self._address,
     port: self._port,
@@ -402,7 +402,7 @@ Socket.prototype.setTTL = function (ttl) {
  *                            operation is done.
  */
 Socket.prototype.setMulticastTTL = function (ttl, callback) {
-  var self = this
+  const self = this
   if (!callback) callback = function () {}
   if (self._bindState === BIND_STATE_BOUND) {
     setMulticastTTL(callback)
@@ -430,7 +430,7 @@ Socket.prototype.setMulticastTTL = function (ttl, callback) {
  *                            operation is done.
  */
 Socket.prototype.setMulticastLoopback = function (flag, callback) {
-  var self = this
+  const self = this
   if (!callback) callback = function () {}
   if (self._bindState === BIND_STATE_BOUND) {
     setMulticastLoopback(callback)
@@ -464,7 +464,7 @@ Socket.prototype.setMulticastLoopback = function (flag, callback) {
 Socket.prototype.addMembership = function (multicastAddress,
   multicastInterface,
   callback) {
-  var self = this
+  const self = this
   if (!callback) callback = function () {}
   chrome.sockets.udp.joinGroup(self.id, multicastAddress, callback)
 }
@@ -489,7 +489,7 @@ Socket.prototype.addMembership = function (multicastAddress,
 Socket.prototype.dropMembership = function (multicastAddress,
   multicastInterface,
   callback) {
-  var self = this
+  const self = this
   if (!callback) callback = function () {}
   chrome.sockets.udp.leaveGroup(self.id, multicastAddress, callback)
 }
